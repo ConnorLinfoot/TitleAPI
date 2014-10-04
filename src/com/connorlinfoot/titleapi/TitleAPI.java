@@ -64,7 +64,22 @@ public class TitleAPI extends JavaPlugin implements Listener {
     }
 
     public static void sendTabTitle(Player player, String header, String footer) {
-        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        if (craftPlayer.getHandle().playerConnection.networkManager.getVersion() != 47)
+            return; // If using 1.8, allow method to run
+
+        PlayerConnection connection = craftPlayer.getHandle().playerConnection;
+
+
+        if (header == null) header = "";
+        header = ChatColor.translateAlternateColorCodes('&', header);
+
+        if (footer == null) footer = "";
+        footer = ChatColor.translateAlternateColorCodes('&', footer);
+
+        header = header.replaceAll("%player%", player.getDisplayName());
+        footer = footer.replaceAll("%player%", player.getDisplayName());
+
         IChatBaseComponent header2 = ChatSerializer.a("{'color': 'white', 'text': '" + header + "'}");
         IChatBaseComponent footer2 = ChatSerializer.a("{'color': 'white', 'text': '" + footer + "'}");
         connection.sendPacket(new ProtocolInjector.PacketTabHeader(header2, footer2));
