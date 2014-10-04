@@ -1,7 +1,7 @@
 name: TitleAPI
 description: TitleAPI
 main: com.connorlinfoot.titleapi.TitleAPI
-version: 1.1
+version: 1.2
 commands:
   title:
     description: Minecraft 1.8 Title Feature

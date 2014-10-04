@@ -2,6 +2,7 @@ package com.connorlinfoot.titleapi;
 
 import net.minecraft.server.v1_7_R4.ChatSerializer;
 import net.minecraft.server.v1_7_R4.IChatBaseComponent;
+import net.minecraft.server.v1_7_R4.PlayerConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -39,6 +40,13 @@ public class TitleAPI extends JavaPlugin {
             craftPlayer.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.TITLE, title2));
         if (subtitle != null)
             craftPlayer.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.SUBTITLE, subtitle2));
+    }
+
+    public static void sendTabTitle(Player player, String header, String footer) {
+        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+        IChatBaseComponent header2 = ChatSerializer.a("{'color': 'white', 'text': '" + header + "'}");
+        IChatBaseComponent footer2 = ChatSerializer.a("{'color': 'white', 'text': '" + footer + "'}");
+        connection.sendPacket(new ProtocolInjector.PacketTabHeader(header2, footer2));
     }
 
     @Override
