@@ -11,11 +11,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spigotmc.ProtocolInjector;
 
 
-public class TitleAPI extends JavaPlugin {
+public class TitleAPI extends JavaPlugin implements Listener {
 
     @Deprecated
     public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String message) {
@@ -42,6 +45,9 @@ public class TitleAPI extends JavaPlugin {
 
         if (subtitle == null) subtitle = "";
         subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
+
+        title = title.replaceAll("%player%", player.getDisplayName());
+        subtitle = subtitle.replaceAll("%player%", player.getDisplayName());
 
         IChatBaseComponent title2;
         IChatBaseComponent subtitle2;
@@ -139,6 +145,8 @@ public class TitleAPI extends JavaPlugin {
         console.sendMessage("");
         console.sendMessage(ChatColor.BLUE + "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
         console.sendMessage("");
+
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     boolean isInteger(String s) {
@@ -149,6 +157,17 @@ public class TitleAPI extends JavaPlugin {
         }
         // only got here if we didn't return false
         return true;
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        if (getConfig().getBoolean("Title On Join")) {
+            sendTitle(event.getPlayer(), 20, 50, 20, getConfig().getString("Title Message"), getConfig().getString("Subtitle Message"));
+        }
+
+        if (getConfig().getBoolean("Tab Header Enabled")) {
+            sendTabTitle(event.getPlayer(), getConfig().getString("Tab Header Message"), getConfig().getString("Tab Footer Message"));
+        }
     }
 
     public void onDisable() {
