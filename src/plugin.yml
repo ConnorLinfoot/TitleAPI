@@ -1,5 +1,5 @@
 name: TitleAPI
-description: TitleAPI
+description: TitleAPI allows you to use the new 1.8 titles with the latest Spigot patcher
 main: com.connorlinfoot.titleapi.TitleAPI
 version: 1.2.1
 commands:
