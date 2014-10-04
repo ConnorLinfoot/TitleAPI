@@ -17,6 +17,21 @@ import org.spigotmc.ProtocolInjector;
 
 public class TitleAPI extends JavaPlugin {
 
+    @Deprecated
+    public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String message) {
+        sendTitle(player, fadeIn, stay, fadeOut, message, null);
+    }
+
+    @Deprecated
+    public static void sendSubtitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String message) {
+        sendTitle(player, fadeIn, stay, fadeOut, null, message);
+    }
+
+    @Deprecated
+    public static void sendFullTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
+        sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
+    }
+
     public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         if (craftPlayer.getHandle().playerConnection.networkManager.getVersion() != 47)
