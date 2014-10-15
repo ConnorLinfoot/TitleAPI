@@ -87,6 +87,11 @@ public class TitleAPI extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String string, String[] args) {
+        if (!sender.hasPermission("title.use")) {
+            sender.sendMessage(ChatColor.RED + "You do not have the permission " + ChatColor.BOLD + "\"title.use\"");
+            return false;
+        }
+
         if (args.length < 6) {
             sender.sendMessage(ChatColor.RED + "Usage: /title <player> title|subtitle <fadeIn> <stay> <fadeOut> <text>");
             sender.sendMessage(ChatColor.RED + "Note: fadeIn, stay &, fadeOut require to be a number, works in ticks; 20 = 1 second");
@@ -170,7 +175,6 @@ public class TitleAPI extends JavaPlugin implements Listener {
         } catch (NumberFormatException e) {
             return false;
         }
-        // only got here if we didn't return false
         return true;
     }
 
