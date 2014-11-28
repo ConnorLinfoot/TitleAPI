@@ -1,21 +1,18 @@
 package com.connorlinfoot.titleapi;
 
-import net.minecraft.server.v1_7_R4.ChatSerializer;
-import net.minecraft.server.v1_7_R4.IChatBaseComponent;
-import net.minecraft.server.v1_7_R4.PlayerConnection;
+import net.minecraft.server.v1_8_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.spigotmc.ProtocolInjector;
+
+import java.lang.reflect.Field;
 
 
 public class TitleAPI extends JavaPlugin implements Listener {
@@ -36,41 +33,29 @@ public class TitleAPI extends JavaPlugin implements Listener {
     }
 
     public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        if (craftPlayer.getHandle().playerConnection.networkManager.getVersion() != 47)
-            return; // If using 1.8, allow method to run
+        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
 
-        if (title == null) title = "";
-        title = ChatColor.translateAlternateColorCodes('&', title);
+        PacketPlayOutTitle packetPlayOutTimes = new PacketPlayOutTitle(EnumTitleAction.TIMES, null, fadeIn, stay, fadeOut);
+        connection.sendPacket(packetPlayOutTimes);
 
-        if (subtitle == null) subtitle = "";
-        subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
+        if (subtitle != null) {
+            subtitle = subtitle.replaceAll("%player%", player.getDisplayName());
+            subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
+            IChatBaseComponent titleSub = ChatSerializer.a("{\"text\": \"" + subtitle + "\"}");
+            PacketPlayOutTitle packetPlayOutSubTitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, titleSub);
+            connection.sendPacket(packetPlayOutSubTitle);
+        }
 
-        title = title.replaceAll("%player%", player.getDisplayName());
-        subtitle = subtitle.replaceAll("%player%", player.getDisplayName());
-
-        IChatBaseComponent title2;
-        IChatBaseComponent subtitle2;
-        IChatBaseComponent serializedTitle = ChatSerializer.a(TextConverter.convert(title));
-        IChatBaseComponent serializedSubTitle = ChatSerializer.a(TextConverter.convert(subtitle));
-        title2 = serializedTitle;
-        subtitle2 = serializedSubTitle;
-
-        craftPlayer.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.TIMES, fadeIn, stay, fadeOut));
-        if (title != null)
-            craftPlayer.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.TITLE, title2));
-        if (subtitle != null)
-            craftPlayer.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.SUBTITLE, subtitle2));
+        if (title != null) {
+            title = title.replaceAll("%player%", player.getDisplayName());
+            title = ChatColor.translateAlternateColorCodes('&', title);
+            IChatBaseComponent titleMain = ChatSerializer.a("{\"text\": \"" + title + "\"}");
+            PacketPlayOutTitle packetPlayOutTitle = new PacketPlayOutTitle(EnumTitleAction.TITLE, titleMain);
+            connection.sendPacket(packetPlayOutTitle);
+        }
     }
 
     public static void sendTabTitle(Player player, String header, String footer) {
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        if (craftPlayer.getHandle().playerConnection.networkManager.getVersion() != 47)
-            return; // If using 1.8, allow method to run
-
-        PlayerConnection connection = craftPlayer.getHandle().playerConnection;
-
-
         if (header == null) header = "";
         header = ChatColor.translateAlternateColorCodes('&', header);
 
@@ -80,75 +65,20 @@ public class TitleAPI extends JavaPlugin implements Listener {
         header = header.replaceAll("%player%", player.getDisplayName());
         footer = footer.replaceAll("%player%", player.getDisplayName());
 
-        IChatBaseComponent header2 = ChatSerializer.a("{'color': 'white', 'text': '" + header + "'}");
-        IChatBaseComponent footer2 = ChatSerializer.a("{'color': 'white', 'text': '" + footer + "'}");
-        connection.sendPacket(new ProtocolInjector.PacketTabHeader(header2, footer2));
-    }
+        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+        IChatBaseComponent tabTitle = ChatSerializer.a("{\"text\": \"" + header + "\"}");
+        IChatBaseComponent tabFoot = ChatSerializer.a("{\"text\": \"" + footer + "\"}");
+        PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(tabTitle);
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String string, String[] args) {
-        if (!sender.hasPermission("title.use")) {
-            sender.sendMessage(ChatColor.RED + "You do not have the permission " + ChatColor.BOLD + "\"title.use\"");
-            return false;
+        try {
+            Field field = headerPacket.getClass().getDeclaredField("b");
+            field.setAccessible(true);
+            field.set(headerPacket, tabFoot);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.sendPacket(headerPacket);
         }
-
-        if (args.length < 6) {
-            sender.sendMessage(ChatColor.RED + "Usage: /title <player> title|subtitle <fadeIn> <stay> <fadeOut> <text>");
-            sender.sendMessage(ChatColor.RED + "Note: fadeIn, stay &, fadeOut require to be a number, works in ticks; 20 = 1 second");
-            return false;
-        }
-
-        if (Bukkit.getPlayer(args[0]) == null) {
-            sender.sendMessage(ChatColor.RED + "Player not found");
-            return false;
-        }
-
-        Player player = Bukkit.getPlayer(args[0]);
-
-        if (!args[1].equalsIgnoreCase("title") && !args[1].equalsIgnoreCase("subtitle")) {
-            sender.sendMessage(ChatColor.RED + "Invalid argument: " + args[1]);
-            return false;
-        }
-
-        if (!isInteger(args[2])) {
-            sender.sendMessage(ChatColor.RED + "Not a number: " + args[2]);
-            return false;
-        }
-
-        if (!isInteger(args[3])) {
-            sender.sendMessage(ChatColor.RED + "Not a number: " + args[3]);
-            return false;
-        }
-
-        if (!isInteger(args[4])) {
-            sender.sendMessage(ChatColor.RED + "Not a number: " + args[4]);
-            return false;
-        }
-
-        StringBuilder builder = new StringBuilder();
-        for (String value : args) {
-            builder.append(value).append(" ");
-        }
-        String message = builder.toString();
-        message = message.replace(args[0] + " ", "");
-        message = message.replace(args[1] + " ", "");
-        message = message.replace(args[2] + " ", "");
-        message = message.replace(args[3] + " ", "");
-        message = message.replace(args[4] + " ", "");
-
-        if (args[1].equalsIgnoreCase("title")) {
-            sendTitle(player, Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), message, null);
-            sender.sendMessage(ChatColor.GREEN + "Title sent");
-            return true;
-        }
-
-        if (args[1].equalsIgnoreCase("subtitle")) {
-            sendTitle(player, Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), null, message);
-            sender.sendMessage(ChatColor.GREEN + "Title sent");
-            return true;
-        }
-
-        return false;
     }
 
     public void onEnable() {
