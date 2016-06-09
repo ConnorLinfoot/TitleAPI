@@ -136,56 +136,22 @@ public class TitleAPI extends JavaPlugin implements Listener {
 		}
 	}
 
-	private String pluginPrefix = ChatColor.GRAY + "[" + ChatColor.AQUA + "TitleAPI" + ChatColor.GRAY + "] " + ChatColor.RESET;
-	private String pluginMessage = null;
-	private String updateMessage = null;
-	private boolean updateAvailable = false;
-
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 
-		CLUpdate clUpdate = new CLUpdate(this);
-		CLUpdate.UpdateResult updateResult = clUpdate.getResult();
-
-		if (clUpdate.getMessage() != null) {
-			pluginMessage = clUpdate.getMessage();
-		}
-
-		switch (updateResult) {
-			default:
-			case NO_UPDATE:
-				updateAvailable = false;
-				updateMessage = pluginPrefix + "No update was found, you are running the latest version.";
-				break;
-			case DISABLED:
-				updateAvailable = false;
-				updateMessage = pluginPrefix + "You currently have update checks disabled";
-				break;
-			case UPDATE_AVAILABLE:
-				updateAvailable = true;
-				updateMessage = pluginPrefix + "An update for " + getDescription().getName() + " is available, new version is " + clUpdate.getVersion() + ". Your installed version is " + getDescription().getVersion() + ".\nPlease update to the latest version :)";
-				break;
-		}
+		Bukkit.getPluginManager().registerEvents(this, this);
 
 		Server server = getServer();
 		ConsoleCommandSender console = server.getConsoleSender();
 		console.sendMessage(ChatColor.AQUA + getDescription().getName() + " V" + getDescription().getVersion() + " has been enabled!");
 
-		if (updateMessage != null)
-			console.sendMessage(updateMessage);
-		Bukkit.getPluginManager().registerEvents(this, this);
+		CLUpdate clUpdate = new CLUpdate(this);
+		Bukkit.getPluginManager().registerEvents(clUpdate, this);
 	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (updateAvailable && event.getPlayer().isOp()) {
-			event.getPlayer().sendMessage(updateMessage);
-		}
-		if (pluginMessage != null && event.getPlayer().isOp()) {
-			event.getPlayer().sendMessage(pluginMessage);
-		}
-
 		if (getConfig().getBoolean("Title On Join")) {
 			sendTitle(event.getPlayer(), 20, 50, 20, getConfig().getString("Title Message"), getConfig().getString("Subtitle Message"));
 		}
