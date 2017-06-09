@@ -125,11 +125,14 @@ public class TitleAPI extends JavaPlugin implements Listener {
 		try {
 			Object tabHeader = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + header + "\"}");
 			Object tabFooter = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + footer + "\"}");
-			Constructor<?> titleConstructor = getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor(getNMSClass("IChatBaseComponent"));
-			Object packet = titleConstructor.newInstance(tabHeader);
-			Field field = packet.getClass().getDeclaredField("b");
-			field.setAccessible(true);
-			field.set(packet, tabFooter);
+			Constructor<?> titleConstructor = getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor();
+			Object packet = titleConstructor.newInstance();
+			Field aField = packet.getClass().getDeclaredField("a");
+			aField.setAccessible(true);
+			aField.set(packet, tabHeader);
+			Field bField = packet.getClass().getDeclaredField("b");
+			bField.setAccessible(true);
+			bField.set(packet, tabFooter);
 			sendPacket(player, packet);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -137,12 +140,12 @@ public class TitleAPI extends JavaPlugin implements Listener {
 	}
 
 	public void onEnable() {
+		Server server = getServer();
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 
 		Bukkit.getPluginManager().registerEvents(this, this);
 
-		Server server = getServer();
 		ConsoleCommandSender console = server.getConsoleSender();
 		console.sendMessage(ChatColor.AQUA + getDescription().getName() + " V" + getDescription().getVersion() + " has been enabled!");
 
