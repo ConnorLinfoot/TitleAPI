@@ -74,19 +74,19 @@ public class TitleAPI extends JavaPlugin implements Listener {
 				title = "";
 			} else {
 				title = ChatColor.translateAlternateColorCodes('&', title)
-                        .replace("%player%", player.getDisplayName());
+						.replace("%player%", player.getDisplayName());
 			}
 			if (subtitle != null) {
 				subtitle = ChatColor.translateAlternateColorCodes('&', subtitle)
 						.replace("%player%", player.getDisplayName());
 			}
-            try {
-                Class<?> playerImplClass = GlowstonePlatformUtil.getClass("net.glowstone.entity.GlowPlayer");
-                Method sendTitleMethod = playerImplClass.getMethod("sendTitle", String.class, String.class, int.class, int.class, int.class);
-                sendTitleMethod.invoke(player, title, subtitle, fadeIn, stay, fadeOut);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+			try {
+				Class<?> playerImplClass = GlowstonePlatformUtil.getClass("net.glowstone.entity.GlowPlayer");
+				Method sendTitleMethod = playerImplClass.getMethod("sendTitle", String.class, String.class, int.class, int.class, int.class);
+				sendTitleMethod.invoke(player, title, subtitle, fadeIn, stay, fadeOut);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return;
 		}
 		try {
@@ -155,22 +155,22 @@ public class TitleAPI extends JavaPlugin implements Listener {
 		footer = footer.replaceAll("%player%", player.getDisplayName());
 
 		if (GlowstonePlatformUtil.isGlowstoneServer()) {
-            try {
-                Class<?> textComponentClass = GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.TextComponent");
-                Method fromLegacyTextMethod = textComponentClass.getMethod("fromLegacyText", String.class);
-                Object tabHeader = fromLegacyTextMethod.invoke(null, header);
-                Object tabFooter = fromLegacyTextMethod.invoke(null, footer);
-                Class<?> playerImplClass = GlowstonePlatformUtil.getClass("net.glowstone.entity.GlowPlayer");
-                Method setPlayerListHeaderFooter = playerImplClass.getMethod("setPlayerListHeaderFooter",
-                        GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.BaseComponent", true),
-                        GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.BaseComponent", true)
-                );
-                setPlayerListHeaderFooter.invoke(player, tabHeader, tabFooter);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
+			try {
+				Class<?> textComponentClass = GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.TextComponent");
+				Method fromLegacyTextMethod = textComponentClass.getMethod("fromLegacyText", String.class);
+				Object tabHeader = fromLegacyTextMethod.invoke(null, header);
+				Object tabFooter = fromLegacyTextMethod.invoke(null, footer);
+				Class<?> playerImplClass = GlowstonePlatformUtil.getClass("net.glowstone.entity.GlowPlayer");
+				Method setPlayerListHeaderFooter = playerImplClass.getMethod("setPlayerListHeaderFooter",
+						GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.BaseComponent", true),
+						GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.BaseComponent", true)
+				);
+				setPlayerListHeaderFooter.invoke(player, tabHeader, tabFooter);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return;
+		}
 		try {
 			Object tabHeader = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + header + "\"}");
 			Object tabFooter = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + footer + "\"}");
