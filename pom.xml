@@ -42,10 +42,6 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>glowstone-repo</id>
-            <url>https://repo.glowstone.net/content/repositories/releases/</url>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -57,12 +53,6 @@
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.12-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>net.glowstone</groupId>
-            <artifactId>glowstone</artifactId>
-            <version>2017.6.1</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
