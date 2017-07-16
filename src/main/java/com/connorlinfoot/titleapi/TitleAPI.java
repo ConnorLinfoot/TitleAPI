@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 
 public class TitleAPI extends JavaPlugin implements Listener {
@@ -32,6 +33,14 @@ public class TitleAPI extends JavaPlugin implements Listener {
 	}
 
 	public static void sendPacket(Player player, Object packet) {
+		if (GlowstonePlatformUtil.isGlowstonePacket(packet)) {
+			try {
+				GlowstonePlatformUtil.sendPacket(player, packet);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return;
+		}
 		try {
 			Object handle = player.getClass().getMethod("getHandle").invoke(player);
 			Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
@@ -42,6 +51,9 @@ public class TitleAPI extends JavaPlugin implements Listener {
 	}
 
 	public static Class<?> getNMSClass(String name) {
+		if (GlowstonePlatformUtil.isGlowstoneServer()) {
+			return null;
+		}
 		String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		try {
 			return Class.forName("net.minecraft.server." + version + "." + name);
@@ -57,6 +69,26 @@ public class TitleAPI extends JavaPlugin implements Listener {
 		if (titleSendEvent.isCancelled())
 			return;
 
+		if (GlowstonePlatformUtil.isGlowstoneServer()) {
+			if (title == null) {
+				title = "";
+			} else {
+				title = ChatColor.translateAlternateColorCodes('&', title)
+                        .replace("%player%", player.getDisplayName());
+			}
+			if (subtitle != null) {
+				subtitle = ChatColor.translateAlternateColorCodes('&', subtitle)
+						.replace("%player%", player.getDisplayName());
+			}
+            try {
+                Class<?> playerImplClass = GlowstonePlatformUtil.getClass("net.glowstone.entity.GlowPlayer");
+                Method sendTitleMethod = playerImplClass.getMethod("sendTitle", String.class, String.class, int.class, int.class, int.class);
+                sendTitleMethod.invoke(player, title, subtitle, fadeIn, stay, fadeOut);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+			return;
+		}
 		try {
 			Object e;
 			Object chatTitle;
@@ -122,6 +154,23 @@ public class TitleAPI extends JavaPlugin implements Listener {
 		header = header.replaceAll("%player%", player.getDisplayName());
 		footer = footer.replaceAll("%player%", player.getDisplayName());
 
+		if (GlowstonePlatformUtil.isGlowstoneServer()) {
+            try {
+                Class<?> textComponentClass = GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.TextComponent");
+                Method fromLegacyTextMethod = textComponentClass.getMethod("fromLegacyText", String.class);
+                Object tabHeader = fromLegacyTextMethod.invoke(null, header);
+                Object tabFooter = fromLegacyTextMethod.invoke(null, footer);
+                Class<?> playerImplClass = GlowstonePlatformUtil.getClass("net.glowstone.entity.GlowPlayer");
+                Method setPlayerListHeaderFooter = playerImplClass.getMethod("setPlayerListHeaderFooter",
+                        GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.BaseComponent", true),
+                        GlowstonePlatformUtil.getClass("net.md_5.bungee.api.chat.BaseComponent", true)
+                );
+                setPlayerListHeaderFooter.invoke(player, tabHeader, tabFooter);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 		try {
 			Object tabHeader = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + header + "\"}");
 			Object tabFooter = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + footer + "\"}");
