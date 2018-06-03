@@ -1,10 +1,11 @@
 package com.connorlinfoot.titleapi;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class TitleSendEvent extends Event {
+public class TitleSendEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private final Player player;
 	private String title;
@@ -53,6 +54,4 @@ public class TitleSendEvent extends Event {
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
 	}
-
 }
-
