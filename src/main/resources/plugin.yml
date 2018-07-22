@@ -2,3 +2,4 @@ name: TitleAPI
 description: TitleAPI allows you to use the new 1.8 titles on Spigot 1.8+
 main: com.connorlinfoot.titleapi.TitleAPI
 version: ${project.version}
+api-version: 1.13
