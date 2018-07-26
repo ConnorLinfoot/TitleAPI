@@ -27,7 +27,7 @@ jobs:
     # To see the list of pre-built images that CircleCI provides for most common languages see
     # https://circleci.com/docs/2.0/circleci-images/
     docker:
-    - image: maven:3-jdk-8
+    - image: circleci/openjdk:8-jdk-node-browsers
       command: /sbin/init
     steps:
     # Machine Setup
