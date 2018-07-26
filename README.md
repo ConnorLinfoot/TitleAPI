@@ -18,8 +18,8 @@ projects.
 <dependencies>
     <dependency>
         <groupId>com.github.ConnorLinfoot</groupId>
-	      <artifactId>TitleAPI</artifactId>
-	      <version>1.7.6</version>
+	<artifactId>TitleAPI</artifactId>
+	<version>1.7.6</version>
     </dependency>
 </dependencies>	
 ```
