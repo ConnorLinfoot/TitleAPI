@@ -157,9 +157,10 @@ public class TitleAPI extends JavaPlugin implements Listener {
 
         ConsoleCommandSender console = server.getConsoleSender();
         console.sendMessage(ChatColor.AQUA + getDescription().getName() + " V" + getDescription().getVersion() + " has been enabled!");
-
-        CLUpdate clUpdate = new CLUpdate(this);
-        Bukkit.getPluginManager().registerEvents(clUpdate, this);
+        if(getConfig().getBoolean("Updates")) {
+            CLUpdate clUpdate = new CLUpdate(this);
+            Bukkit.getPluginManager().registerEvents(clUpdate, this);
+        }
     }
 
     @EventHandler
