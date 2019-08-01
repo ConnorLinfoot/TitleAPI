@@ -170,11 +170,11 @@ public class TitleAPI extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (getConfig().getBoolean("Title On Join")) {
-            sendTitle(event.getPlayer(), 20, 50, 20, getConfig().getString("Title Message").replace("\"", "\\\""), getConfig().getString("Subtitle Message").replace("\"", "\\\""));
+            sendTitle(event.getPlayer(), 20, 50, 20, getConfig().getString("Title Message"), getConfig().getString("Subtitle Message"));
         }
 
         if (getConfig().getBoolean("Tab Header Enabled")) {
-            sendTabTitle(event.getPlayer(), getConfig().getString("Tab Header Message").replace("\"", "\\\""), getConfig().getString("Tab Footer Message").replace("\"", "\\\""));
+            sendTabTitle(event.getPlayer(), getConfig().getString("Tab Header Message"), getConfig().getString("Tab Footer Message"));
         }
     }
 
