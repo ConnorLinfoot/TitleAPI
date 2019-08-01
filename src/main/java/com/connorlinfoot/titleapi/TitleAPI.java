@@ -66,6 +66,7 @@ public class TitleAPI extends JavaPlugin implements Listener {
             Object subtitlePacket;
 
             if (title != null) {
+                title = title.replace("\"", "\\\"");
                 title = ChatColor.translateAlternateColorCodes('&', title);
                 title = title.replaceAll("%player%", player.getDisplayName());
                 // Times packets
@@ -83,6 +84,7 @@ public class TitleAPI extends JavaPlugin implements Listener {
             }
 
             if (subtitle != null) {
+                subtitle = subtitle.replace("\"", "\\\"");
                 subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
                 subtitle = subtitle.replaceAll("%player%", player.getDisplayName());
                 // Times packets
@@ -118,7 +120,9 @@ public class TitleAPI extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().callEvent(tabTitleSendEvent);
         if (tabTitleSendEvent.isCancelled())
             return;
-
+   
+        header = header.replace("\"", "\\\"");
+        footer = footer.replace("\"", "\\\"");
         header = header.replaceAll("%player%", player.getDisplayName());
         footer = footer.replaceAll("%player%", player.getDisplayName());
 
@@ -166,11 +170,11 @@ public class TitleAPI extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (getConfig().getBoolean("Title On Join")) {
-            sendTitle(event.getPlayer(), 20, 50, 20, getConfig().getString("Title Message"), getConfig().getString("Subtitle Message"));
+            sendTitle(event.getPlayer(), 20, 50, 20, getConfig().getString("Title Message").replace("\"", "\\\""), getConfig().getString("Subtitle Message").replace("\"", "\\\""));
         }
 
         if (getConfig().getBoolean("Tab Header Enabled")) {
-            sendTabTitle(event.getPlayer(), getConfig().getString("Tab Header Message"), getConfig().getString("Tab Footer Message"));
+            sendTabTitle(event.getPlayer(), getConfig().getString("Tab Header Message").replace("\"", "\\\""), getConfig().getString("Tab Footer Message").replace("\"", "\\\""));
         }
     }
 
