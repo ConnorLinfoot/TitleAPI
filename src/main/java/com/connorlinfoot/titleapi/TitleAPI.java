@@ -66,6 +66,7 @@ public class TitleAPI extends JavaPlugin implements Listener {
             Object subtitlePacket;
 
             if (title != null) {
+                title = title.replace("\"", "\\\"");
                 title = ChatColor.translateAlternateColorCodes('&', title);
                 title = title.replaceAll("%player%", player.getDisplayName());
                 // Times packets
@@ -83,6 +84,7 @@ public class TitleAPI extends JavaPlugin implements Listener {
             }
 
             if (subtitle != null) {
+                subtitle = subtitle.replace("\"", "\\\"");
                 subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
                 subtitle = subtitle.replaceAll("%player%", player.getDisplayName());
                 // Times packets
@@ -118,7 +120,9 @@ public class TitleAPI extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().callEvent(tabTitleSendEvent);
         if (tabTitleSendEvent.isCancelled())
             return;
-
+   
+        header = header.replace("\"", "\\\"");
+        footer = footer.replace("\"", "\\\"");
         header = header.replaceAll("%player%", player.getDisplayName());
         footer = footer.replaceAll("%player%", player.getDisplayName());
 
@@ -157,9 +161,10 @@ public class TitleAPI extends JavaPlugin implements Listener {
 
         ConsoleCommandSender console = server.getConsoleSender();
         console.sendMessage(ChatColor.AQUA + getDescription().getName() + " V" + getDescription().getVersion() + " has been enabled!");
-
-        CLUpdate clUpdate = new CLUpdate(this);
-        Bukkit.getPluginManager().registerEvents(clUpdate, this);
+        if(getConfig().getBoolean("Updates")) {
+            CLUpdate clUpdate = new CLUpdate(this);
+            Bukkit.getPluginManager().registerEvents(clUpdate, this);
+        }
     }
 
     @EventHandler
