@@ -1,7 +1,7 @@
 TitleAPI
 =====================
 
-[![CircleCI](https://circleci.com/gh/ConnorLinfoot/TitleAPI/tree/master.svg?style=svg)](https://api.connorlinfoot.com/v1/ci/artifact/TitleAPI/latest/download)
+[![Java CI with Maven](https://github.com/ConnorLinfoot/TitleAPI/actions/workflows/maven.yml/badge.svg)](https://github.com/ConnorLinfoot/TitleAPI/actions/workflows/maven.yml)
 [![](https://jitpack.io/v/ConnorLinfoot/TitleAPI.svg)](https://jitpack.io/#ConnorLinfoot/TitleAPI)
 
 ## Maven
