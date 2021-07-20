@@ -38,13 +38,14 @@ class CLUpdate implements Listener {
     }
 
     private void doCheck() {
-        String data = null;
+        String data;
         String url = "http://api.linfoot.dev/v1/resource/release/" + plugin.getDescription().getName().toLowerCase() + "/";
         try {
             data = doCurl(url);
         } catch (IOException e) {
-            e.printStackTrace();
+            return;
         }
+
         JSONParser jsonParser = new JSONParser();
         try {
             JSONObject obj = (JSONObject) jsonParser.parse(data);
@@ -63,14 +64,10 @@ class CLUpdate implements Listener {
                 }
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            return;
         }
-        Bukkit.getScheduler().runTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                handleResult();
-            }
-        });
+
+        Bukkit.getScheduler().runTask(plugin, this::handleResult);
     }
 
     public String getVersion() {
