@@ -81,15 +81,16 @@ public class TitleAPI extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-        Server server = getServer();
         getConfig().options().copyDefaults(true);
         saveConfig();
 
         this.internalApi = InternalAPIMapping.create();
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        CLUpdate clUpdate = new CLUpdate(this);
-        Bukkit.getPluginManager().registerEvents(clUpdate, this);
+        if (getConfig().getBoolean("Check for Updates")) {
+            CLUpdate updater = new CLUpdate(this);
+            Bukkit.getPluginManager().registerEvents(updater, this);
+        }
     }
 
     Optional<InternalTitleAPI> getInternalApi() {

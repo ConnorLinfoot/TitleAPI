@@ -12,5 +12,4 @@ interface InternalTitleAPI {
 
     void sendTabTitle(Player player, String header, String footer);
 
-
 }
