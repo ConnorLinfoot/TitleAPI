@@ -5,6 +5,7 @@ TitleAPI
 [![](https://jitpack.io/v/ConnorLinfoot/TitleAPI.svg)](https://jitpack.io/#ConnorLinfoot/TitleAPI)
 
 ## Maven
+
 This library can be found on [JitPack](https://jitpack.io/#ConnorLinfoot/TitleAPI) for easy integration into maven 
 projects.
 ```xml
