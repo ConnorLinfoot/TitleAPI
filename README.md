@@ -17,7 +17,6 @@ This library can be found on [JitPack](https://jitpack.io/#ConnorLinfoot/TitleAP
 projects.
 
 ```xml
-
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -29,7 +28,7 @@ projects.
 <dependency>
     <groupId>com.github.ConnorLinfoot</groupId>
     <artifactId>TitleAPI</artifactId>
-    <version>1.8</version>
+    <version>1.8.1</version>
 </dependency>
 </dependencies>    
 ```
