@@ -17,7 +17,7 @@ enum InternalAPIMapping {
     static InternalTitleAPI create() {
         MinecraftVersion version = MinecraftVersion.get();
         for (InternalAPIMapping thisOne : values()) {
-            if (thisOne.maxVersion.isLessThanOrEqualTo(version)) {
+            if (version.isLessThanOrEqualTo(thisOne.maxVersion)) {
                 try {
                     return thisOne.apiClass.newInstance();
                 } catch (InstantiationException | IllegalAccessException e) {
